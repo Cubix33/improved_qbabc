@@ -205,10 +205,27 @@ class ImprovedQBABC:
         return weights
 
     def qrng_initialize(self):
+        """Use actual quantum random number generation"""
+        from qiskit import QuantumCircuit
+        from qiskit_aer import AerSimulator
+    
+        n_qubits = int(np.ceil(np.log2(self.nedges)))
+        qc = QuantumCircuit(n_qubits, n_qubits)
+        qc.h(range(n_qubits))  # Hadamard gates
+        qc.measure(range(n_qubits), range(n_qubits))
+    
+        simulator = AerSimulator()
+        compiled = transpile(qc, simulator)
+        result = simulator.run(compiled, shots=self.nnodes-1).result()
+    
+    # Convert quantum measurements to edge indices
+        counts = result.get_counts()
+        indices = [int(bitstring, 2) % self.nedges for bitstring in counts.keys()]
+    
         v = np.zeros(self.nedges, dtype=int)
-        indices = np.random.choice(self.nedges, self.nnodes-1, replace=False)
-        v[indices] = 1
+        v[indices[:self.nnodes-1]] = 1
         return v
+
 
     def is_feasible(self, individual):
         if np.sum(individual) != self.nnodes -1:
