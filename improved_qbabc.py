@@ -405,8 +405,8 @@ def main():
     print("IMPROVED QBABC WITH CONTEXTUAL AGENTIC AI\n"+"="*50)
     context_ai = ContextualAgenticAI()
 
-    G = create_sample_vanet(nnodes=50)
-    clusters, _ = fuzzy_cmeans_clustering(G, n_clusters=5)
+    G = create_sample_vanet(nnodes=25)
+    clusters, _ = fuzzy_cmeans_clustering(G, n_clusters=3)
 
     print(f"[FCM] Created {len(clusters)} clusters")
     for i,cluster in enumerate(clusters):
